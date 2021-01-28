@@ -16,10 +16,11 @@ import { DomainContext } from '../shared/context/BasicContextProvider';
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import * as Icons from "@fortawesome/free-solid-svg-icons";
+import SnackBar from '../shared/SnackBar';
 
 const iconList = Object.keys(Icons)
-  .filter((key) => key !== "fas" && key !== "prefix")
-  .map((icon) => Icons[icon]);
+    .filter((key) => key !== "fas" && key !== "prefix")
+    .map((icon) => Icons[icon]);
 library.add(...iconList);
 
 
@@ -28,7 +29,8 @@ interface gridStates {
     rowData: any,
     rowSelection: any,
     autoGroupColumnDef: any,
-    softSelectedDevice: any
+    softSelectedDevice: any,
+    showNotification: boolean
 }
 
 export interface gridProps {
@@ -65,7 +67,8 @@ export class DeviceGrid extends React.Component<gridProps, gridStates>{
                     }
                 }
             },
-            softSelectedDevice: undefined
+            softSelectedDevice: undefined,
+            showNotification: false
         };
     }
 
@@ -74,9 +77,8 @@ export class DeviceGrid extends React.Component<gridProps, gridStates>{
     }
 
     connectionStatusControl = () => {
-        let protocol = window.location.protocol === "https:" ? "https" : "http";
-        const updateConnectionSocket = new WebSocket(window.location.protocol.replace(protocol, "wss") + "//" + this.props.mpsServer + "/notifications/control.ashx")
-        updateConnectionSocket.onopen = () => {
+      const updateConnectionSocket = new WebSocket(`wss://${this.props.mpsServer}/notifications/control.ashx`)
+      updateConnectionSocket.onopen = () => {
             if (this.retry_timer != 0) {
                 clearInterval(this.retry_timer);
                 this.retry_timer = 0;
@@ -85,7 +87,9 @@ export class DeviceGrid extends React.Component<gridProps, gridStates>{
 
         updateConnectionSocket.onclose = () => {
             this.retry_timer = setInterval(() => {
-                this.connectionStatusControl();
+                // this.connectionStatusControl();
+                this.handleNotification()
+                clearInterval(this.retry_timer);
             }, 5000);
         }
 
@@ -95,9 +99,7 @@ export class DeviceGrid extends React.Component<gridProps, gridStates>{
                     rowData: response
                 }))
             }, 200);
-
         }
-
     }
 
     fetchDevices = async () => await HttpClient.post(`https://${this.props.mpsServer}/admin`, JSON.stringify({
@@ -147,6 +149,14 @@ export class DeviceGrid extends React.Component<gridProps, gridStates>{
 
     getSoftSelectId = (id = {}) => id;
 
+    handleNotification = () => {
+        this.setState({
+            showNotification: !this.state.showNotification
+        }, () => {
+            setTimeout(() => this.setState({ showNotification: !this.state.showNotification }), 5000)
+        })
+    }
+
     /**
     * Handles soft select props method
     *
@@ -190,7 +200,10 @@ export class DeviceGrid extends React.Component<gridProps, gridStates>{
 
         }
         return (
-            [<PcsGrid key="device-grid-key" {...gridProps} />]
+            <div>
+                {this.state.showNotification && <SnackBar type="error" message="oops!!! something went wrong. please check server address" />}
+                <PcsGrid key="device-grid-key" {...gridProps} />
+            </div>
         )
     }
 }
