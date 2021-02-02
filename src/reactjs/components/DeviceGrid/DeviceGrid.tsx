@@ -87,8 +87,7 @@ export class DeviceGrid extends React.Component<gridProps, gridStates>{
 
         updateConnectionSocket.onclose = () => {
             this.retry_timer = setInterval(() => {
-                // this.connectionStatusControl();
-                this.handleNotification()
+             this.handleNotification()
                 clearInterval(this.retry_timer);
             }, 5000);
         }
@@ -132,9 +131,6 @@ export class DeviceGrid extends React.Component<gridProps, gridStates>{
                             }
                         });
                     })
-
-                    // let filteredList = this.props.selectedDevices.filter(device => this.sta)
-
                 }
             })
         })
@@ -157,24 +153,7 @@ export class DeviceGrid extends React.Component<gridProps, gridStates>{
         })
     }
 
-    /**
-    * Handles soft select props method
-    *
-    * @param device The currently soft selected device
-    * @param rowEvent The rowEvent to pass on to the underlying grid
-    */
-    onSoftSelectChange = (deviceRowId, rowEvent) => {
-        // const { onSoftSelectChange } = this.props;
-        // const device = (this.deviceGridApi.getRowNode(deviceRowId) || {}).data;
-        // if (device) {
-        //     this.setState({
-        //         softSelectedDevice: device
-        //     });
-        // } 
-        // if (isFunc(onSoftSelectChange)) {
-        //     onSoftSelectChange(device, rowEvent);
-        // }
-    }
+
 
     render() {
         const gridProps = {
@@ -192,7 +171,6 @@ export class DeviceGrid extends React.Component<gridProps, gridStates>{
             sizeColumnsToFit: true,
             getSoftSelectId: this.getSoftSelectId,
             softSelectId: (this.state.softSelectedDevice || {}).id,
-            onSoftSelectChange: this.onSoftSelectChange,
             /* Grid Events */
             onRowClicked: ({ node }) => node.setSelected(!node.isSelected()),
             getRowClass: ({ data }) => !data.conn ? { opacity: 0.5 } : '',
