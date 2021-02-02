@@ -143,6 +143,13 @@ export class RemoteDesktop extends React.Component<KVMProps, { kvmstate: number 
       // Take Action
     }
   }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.deviceId !== this.props.deviceId) {
+     this.stopKVM()
+    }
+  }
+  
   render() {
     return (
       <div className="canvas-container">

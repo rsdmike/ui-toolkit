@@ -12,7 +12,7 @@ import { Provider } from '../shared/context/BasicContextProvider'
 import i18n from '../../../../i18n';
 import { translateText } from '../shared/Methods';
 
-library.add(faInfoCircle, faAngleDoubleRight, faAngleDoubleLeft, faAngleRight, faAngleLeft, faFileExport);
+// library.add(faInfoCircle, faAngleDoubleRight, faAngleDoubleLeft, faAngleRight, faAngleLeft, faFileExport);
 
 // Get browser language
 i18n.changeLanguage(navigator.language)
